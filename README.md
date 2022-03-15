@@ -1,2 +1,3 @@
 # SQL_learning
-The Open resource class from datawhale
+⚠️⚠️The Notes from the Open-resource Class held by Datawhale
+🔗🔗: https://gitee.com/datawhalechina/wonderful-sql
