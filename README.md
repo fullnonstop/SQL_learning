@@ -2,7 +2,7 @@
 
 <br/>
 
-⚠️⚠️**The Notes from the Open-resource Class held by Datawhale**
+⚠️⚠️**The Notes from the Open Source Class held by Datawhale**
 
 <br/>
 
