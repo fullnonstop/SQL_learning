@@ -1,0 +1,213 @@
+## ch02: 基础查询与排序章节笔记整理/作业分享
+
+<br/>
+
+#### 课程出处🏠  ： Datawhale「SQL编程」系列开源课程
+#### 课程链接🔗  ： https://gitee.com/datawhalechina/wonderful-sql/blob/main
+#### ⚠️内容仅为整理自用笔记，非原创，若希望学习建议移步原课程链接观看～
+
+<br/>
+<br/>
+
+#### 1. 从表中选取符合条件的数据
+<br/>
+
+- SELECT 语句通过WHERE子句来指定查询数据的条件，即筛选功能，格式如下：
+  
+<br/>
+
+>SELECT <列名>, ……<br/>
+>FROM <表名><br/>
+>WHERE <条件表达式>;
+
+<br/>
+
+- 注意事项
+
+<br/>
+
+  >星号（*）代表全部列的意思。<br/>
+  SQL中可以随意使用换行符，不影响语句执行（但不可插入空行）。<br/>
+  设定汉语别名时需要使用双引号（"）括起来。<br/>
+  在SELECT语句中使用DISTINCT可以删除重复行。<br/>
+  注释是SQL语句中用来标识说明或者注意事项的部分。分为1行注释"-- "和多行注释两种"/* */"。<br/>
+  SQL语句可以使用AS关键字为列设定别名（用中文时需要双引号（“”））。
+
+<br/>
+
+#### 2. 算术运算符、比较运算符、逻辑运算符
+
+<br/>
+
+- SELECT子句中可以使用常数或者表达式。
+- 使用比较运算符时一定要注意不等号和等号的位置。
+- 字符串类型的数据原则上按照字典顺序进行排序，不能与数字的大小顺序混淆。
+- 希望选取NULL记录时，需要在条件表达式中使用IS NULL运算符。希望选取不是NULL的记录时，需要在条件表达式中使用IS NOT NULL运算符。
+- 值得注意的是，虽然通过 NOT 运算符否定一个条件可以得到相反查询条件的结果，但是其可读性明显不如显式指定查询条件，因此，不可滥用该运算符。
+
+<br/>
+
+- 相关代码如下：
+
+<br/>
+
+
+    -- SQL语句中也可以使用运算表达式
+    SELECT product_name, sale_price, sale_price * 2 AS "sale_price x2"
+      FROM product;
+
+    -- WHERE子句的条件表达式中也可以使用计算表达式
+    SELECT product_name, sale_price, purchase_price
+      FROM product
+     WHERE sale_price - purchase_price >= 500;
+
+    /* 对字符串使用不等号
+    首先创建chars并插入数据
+    选取出大于‘2’的SELECT语句*/
+
+    -- DDL：创建表
+    CREATE TABLE chars
+    （chr CHAR（3）NOT NULL, 
+    PRIMARY KEY（chr））;
+
+    -- 选取出大于'2'的数据的SELECT语句('2'为字符串)
+    SELECT chr
+      FROM chars
+     WHERE chr > '2';
+
+    -- 选取NULL的记录
+    SELECT product_name, purchase_price
+      FROM product
+     WHERE purchase_price IS NULL;
+
+    -- 选取不为NULL的记录
+    SELECT product_name, purchase_price
+      FROM product
+     WHERE purchase_price IS NOT NULL;
+
+<br/>
+
+- 注意事项
+
+<br/>
+
+>AND运算符优先于OR运算符，想要优先执行OR运算，可以使用括号。
+
+<br/>
+
+
+
+    SELECT product_name, product_type, regist_date
+    FROM product
+    WHERE product_type = '办公用品'
+     AND ( regist_date = '2009-09-11'
+          OR regist_date = '2009-09-20'); 
+
+<br/>
+
+#### 3. 练习题-第一部分
+
+<br/>
+
+- 1 编写一条SQL语句，从 product(商品) 表中选取出“登记日期(regist_date)在2009年4月28日之后”的商品，查询结果要包含 product name 和 regist_date 两列。
+
+<br/>
+
+    SELECT product name, regist_date
+    FROM product
+    WHERE regist_date > '2009-04-28';
+
+<br/>
+
+- 2 请说出对product 表执行如下3条SELECT语句时的返回结果。
+
+>①<br/>
+>SELECT *<br/>
+>  FROM product<br/>
+> WHERE purchase_price = NULL;<br/>
+> --在全部列中选取NULL的记录
+
+>②
+>SELECT *<br/>
+>  FROM product<br/>
+> WHERE purchase_price <> NULL;<br/>
+> --在全部列中选取不为NULL的记录
+
+>③
+>SELECT *<br/>
+>  FROM product<br/>
+> WHERE product_name > NULL;<br/>
+> --在全部列中选取不为NULL的记录
+
+<br/>
+
+- 3 章节中的SELECT语句能够从 product 表中取出“销售单价（sale_price）比进货单价（purchase_price）高出500日元以上”的商品。请写出两条可以得到相同结果的SELECT语句。执行结果如下所示：
+
+
+>product_name | sale_price | purchase_price <br/>
+-------------+------------+------------<br/>
+T恤衫        | 　 1000    | 500<br/>
+运动T恤      |    4000    | 2800<br/>
+高压锅       |    6800    | 5000<br/>
+
+    SELECT product_name, sale_price, purchase_price
+    FROM product
+    WHERE product_name = ' T恤衫'
+       OR product_name = ' 运动T恤'
+       OR product_name = '高压锅'；
+
+
+    SELECT product_name, sale_price, purchase_price
+    FROM product
+    WHERE sale_price = 1000
+      AND purchase_price = 500
+       OR sale_price = 4000
+      AND purchase_price = 2800
+       OR sale_price = 6800
+      AND purchase_price = 5000;
+      
+
+<br/>
+
+- 4 请写出一条SELECT语句，从 product 表中选取出满足“销售单价打九折之后利润高于 100 日元的办公用品和厨房用具”条件的记录。查询结果要包括 product_name列、product_type 列以及销售单价打九折之后的利润（别名设定为 profit）。
+>提示：销售单价打九折，可以通过 sale_price 列的值乘以0.9获得，利润可以通过该值减去 purchase_price 列的值获得。
+
+<br/>
+
+    SELECT product_name, product_type, sale_price * 0.9 - pruchase_price AS "profit"
+    FROM product;
+    WHERE profit > 100;
+
+<br/>
+
+#### 4. 聚合函数
+
+<br/>
+
+- SQL中用于汇总的函数叫做聚合函数。以下五个是最常用的聚合函数：
+
+>COUNT：计算表中的记录数（行数）<br/>
+SUM：计算表中数值列中数据的合计值<br/>
+AVG：计算表中数值列中数据的平均值<br/>
+MAX：求出表中任意列中数据的最大值<br/>
+MIN：求出表中任意列中数据的最小值
+
+<br/>
+
+- 常用法则
+
+
+>COUNT函数的结果根据参数的不同而不同。COUNT(*)会得到包含NULL的数据行数，而COUNT(<列名>)会得到NULL之外的数据行数。<br/>
+>聚合函数会将NULL排除在外。但COUNT(*)例外，并不会排除NULL。<br/>
+>MAX/MIN函数几乎适用于所有数据类型的列。SUM/AVG函数只适用于数值类型的列。<br/>
+>想要计算值的种类时，可以在COUNT函数的参数中使用DISTINCT。<br/>
+>在聚合函数的参数中使用DISTINCT，可以删除重复数据。
+
+<br/>
+
+    SELECT purchase_price, COUNT(*)
+     FROM product
+    GROUP BY purchase_price;
+
+>当聚合键包含NULL时，NULL会作为一组特殊数据进行处理<br/>
+书写位置：1 SELECT → 2. FROM → 3. WHERE → 4. GROUP BY
